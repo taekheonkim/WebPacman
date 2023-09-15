@@ -29,7 +29,7 @@ canvas {
 }
 
 .game_text {
-    color : white;
+    color : grey;
     font-family: sans-serif;
     font-size : 50px;
     text-align : center;
@@ -613,8 +613,9 @@ function animate() {
                     cancelAnimationFrame(animationId)
                     console.log('Game Over!')
                     game_display.style.backgroundColor = 'rgba(0,0,0,0.7)'
-                    win_lose_text.innerHTML = 'Game Over!'
+                    win_lose_text.innerHTML = 'Game Over'
                     game_info_text.innerHTML = '잠시 후 게임이 다시 시작됩니다...'
+                    win_lose_text.style.color = 'red'
                     setTimeout(() => {
                       resetInfo()
                       resetPlayer()
