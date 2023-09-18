@@ -28,7 +28,7 @@ def add_ranking(request, score):
             ranker.name = request.POST['name']
             ranker.score = score
             ranker.save()
-            return redirect('index')
+            return redirect('show_ranking')
     else:
         form = Ranker_form()
     context = {'form': form}

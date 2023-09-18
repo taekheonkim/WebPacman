@@ -6,8 +6,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Foldit:wght@500&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/de74b38e3b.js" crossorigin="anonymous"></script>
 </head>
 <style>
+
 body {
     background-color : black;
     color : white;
@@ -18,14 +20,17 @@ header {
     font-size: 100px;
 }
 
-.wrapper{
-    position: absolute;
+.wrapper {
+    width : 440px;
+    height : 540px;
     margin: auto;
     margin-top : 120px;
-    padding: 30px;
-    border-radius: 6px;
     text-align : center;
-    max-width : 1300px;
+}
+
+.info_wrapper {
+    height : 30px;
+    text-align : right;
 }
 
 table {
@@ -35,7 +40,10 @@ table {
 </style>
 <body>
 <div class="wrapper">
-    <header>Ranking</header>
+    <div class="info_wrapper">
+        <i class="fa-solid fa-house" onclick="location.href='{% url 'index' %}'" style="color:white; font-size:25px;"></i>
+    </div>
+        <header>Ranking</header>
         <table>
             <thead>
               <tr>
@@ -56,6 +64,5 @@ table {
             </tbody>
         </table>
 </div>
-<button onclick="location.href='{% url 'index' %}'">돌아가기</button>
 </body>
 </html>

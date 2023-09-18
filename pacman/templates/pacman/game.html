@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Pacman</title>
+    <script src="https://kit.fontawesome.com/de74b38e3b.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
 <style>
 body {
-    margin : 0;
-    padding : 10px 20px;
-    background-color: black;
+    background-color : black;
+    color : white;
+    height : 670px;
 }
 
 .wrapper {
-    display : flex;
+    width : 440px;
+    height : 540px;
+    margin: auto;
 }
 
-canvas {
-    position : absolute;
+.info_wrapper {
+    margin: 0 auto;
+    margin-top : 120px;
+    padding-bottom : 5px;
+    width : 440px;
+    height : 30px;
 }
 
 .game_display {
@@ -26,6 +33,7 @@ canvas {
     position : absolute;
     width : 440px;
     height : 520px;
+    top : 155px;
 }
 
 .game_text {
@@ -37,7 +45,6 @@ canvas {
 
 table {
     width : 440px;
-    text-align : center;
 }
 
 </style>
@@ -51,7 +58,7 @@ table {
     <td><p style="color : white; font-family: sans-serif; font-size : 18px; margin-bottom: 6px;">
         <span>Life: </span><span id="lifeEl">3</span>
     </p></td>
-    <td><button onclick="location.href='{% url 'index' %}'">돌아가기</button></td>
+    <td style="text-align: right;"><i class="fa-solid fa-house" onclick="location.href='{% url 'index' %}'" style="color:white; font-size:25px;"></i></td>
         </tr>
 
     </table>
@@ -324,7 +331,7 @@ console.log(limit_score)
 
 const map = [
   ['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
-  ['|', '.', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
+  ['|', ' ', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
   ['|', '.', 'b', '.', '[', '7', ']', '.', 'b', '.', '|'],
   ['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
   ['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
@@ -630,27 +637,18 @@ function animate() {
                       animationId = requestAnimationFrame(animate)
                   }, 300)
                 }
-                  else { // 게임 오버 및 새게임 시작(전부 초기화)
+                  else { // 게임 오버
                     cancelAnimationFrame(animationId)
-                    console.log('Game Over!')
-
                     last_score = score
-                    resetInfo()
-                    resetPlayer()
-                    resetGhost()
-                    resetMap()
 
                     // 랭킹 등록
-                    console.log('score:', score, 'limit:', limit_score)
                     if (last_score > limit_score) {
-                        console.log('랭킹등록으로')
                         window.location.pathname = '/pacman' + '/add_ranking/' + last_score + '/';
                     } else {
                         game_display.style.backgroundColor = 'rgba(0,0,0,0.7)'
                         win_lose_text.innerHTML = 'Game Over'
                         game_info_text.innerHTML = '잠시 후 메인 화면으로 돌아갑니다...'
                         win_lose_text.style.color = 'red'
-                        console.log('메인으로')
                         setTimeout(() => {
                             window.location.pathname = '/pacman/';
                         }, 2000)

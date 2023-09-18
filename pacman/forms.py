@@ -11,5 +11,5 @@ class Ranker_form(forms.ModelForm):
             'name' : forms.TextInput(attrs={'style': 'max-width: 300px;'}),
         }
         labels = {
-            'name' : '이름',
+            'name' : '이름 ',
         }
