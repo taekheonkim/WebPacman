@@ -63,7 +63,6 @@ table {
 
     </table>
 </div>
-
 <div class="wrapper">
     <canvas></canvas>
     <div class="game_display">
@@ -104,14 +103,30 @@ class Boundary {
 
 }
 
+class Item {
+    constructor({position, image, type}) { // 클래스 초기화 함수. {} 식으로 쓰면 매개변수 순서에 신경쓸 필요 없음!
+        this.position = position
+        this.width = 35
+        this.height = 35
+        this.image = image
+        this.type = type
+    }
+
+    draw() {
+        c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+    }
+}
+
 class Player {
-    constructor({position, velocity}) {
+    static speed = 5
+    constructor({position, velocity, speed}) {
         this.position = position
         this.velocity = velocity
         this.radius = 15
         this.radians = 0.75
         this.openRate = 0.12
         this.rotation = 0
+        this.speed = speed
     }
 
     draw() {
@@ -204,10 +219,10 @@ const pellets = []
 const boundaries = []
 const powerUps = []
 const ghosts = []
+const items = []
 
 function resetGhost() {
   ghosts.splice(0, ghosts.length)
-  console.log('spliced ghosts :', ghosts)
   ghosts.push(new Ghost({position : {
     x:Boundary.width * 6 + Boundary.width / 2,
     y:Boundary.height + Boundary.height / 2
@@ -244,7 +259,8 @@ const player = new Player(
     velocity:{
        x:0,
        y:0
-        }
+        },
+    speed : 5
     }
 )
 
@@ -254,7 +270,6 @@ function resetPlayer() {
   player.radians = 0.75
   player.openRate = 0.12
   player.rotation = 0
-  console.log('reset player :', player)
 }
 
 function resetMap() {
@@ -326,8 +341,6 @@ let score = 0
 let life = 3
 let last_score = 0
 const limit_score = {{ limit_score }}
-console.log(limit_score)
-
 
 const map = [
   ['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
@@ -558,6 +571,25 @@ map.forEach((row, i) => {
 }
 )
 
+function generateRandomItem(){
+    if (Math.random() > 0.995) {
+        const randomInt = Math.floor(Math.random() * 9) + 1;
+        const randomWidth = Math.floor(Math.random() * 9) + 1;
+        const randomHeight = Math.floor(Math.random() * 10) + 1;
+        console.log(randomInt, randomWidth, randomHeight)
+        if (randomInt > 6) {
+            items.push(new Item({
+            position : {x : 40*randomWidth, y :40*randomHeight + 3}, image : createImage('{% static 'img/flash.png' %}'), type : 0}))
+        } else if (randomInt > 3) {
+            items.push(new Item({
+            position : {x : 40*randomWidth + 3, y :40*randomHeight + 3}, image : createImage('{% static 'img/sun.png' %}'), type : 1}))
+        } else {
+            items.push(new Item({
+            position : {x : 40*randomWidth + 3, y :40*randomHeight}, image : createImage('{% static 'img/wind.png' %}'), type : 2}))
+        }
+    }
+}
+
 function circleCollidesWithRectangle({circle, rectangle}) {
     const padding = Boundary.width / 2 - circle.radius - 1
     return (circle.position.y - circle.radius + circle.velocity.y <= rectangle.position.y + rectangle.height + padding
@@ -576,41 +608,41 @@ function animate() {
     if (keys.w.pressed && lastKey === 'w') {
         for (let i = 0; i < boundaries.length; i++) {
             const boundary = boundaries[i]
-            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:0, y:-5}}, rectangle : boundary}))  {
+            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:0, y:-player.speed}}, rectangle : boundary}))  {
                 player.velocity.y = 0
                 break
             } else {
-                player.velocity.y = -5
+                player.velocity.y = -player.speed
             }
         }
     } else if (keys.a.pressed && lastKey === 'a') {
         for (let i = 0; i < boundaries.length; i++) {
             const boundary = boundaries[i]
-            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:-5, y:0}}, rectangle : boundary}))  {
+            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:-player.speed, y:0}}, rectangle : boundary}))  {
                 player.velocity.x = 0
                 break
             } else {
-                player.velocity.x = -5
+                player.velocity.x = -player.speed
             }
         }
     } else if (keys.s.pressed && lastKey === 's') {
         for (let i = 0; i < boundaries.length; i++) {
             const boundary = boundaries[i]
-            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:0, y:5}}, rectangle : boundary}))  {
+            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:0, y:player.speed}}, rectangle : boundary}))  {
                 player.velocity.y = 0
                 break
             } else {
-                player.velocity.y = 5
+                player.velocity.y = player.speed
             }
         }
     } else if (keys.d.pressed && lastKey === 'd') {
         for (let i = 0; i < boundaries.length; i++) {
             const boundary = boundaries[i]
-            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:5, y:0}}, rectangle : boundary}))  {
+            if (circleCollidesWithRectangle({circle : {...player, velocity : {x:player.speed, y:0}}, rectangle : boundary}))  {
                 player.velocity.x = 0
                 break
             } else {
-                player.velocity.x = 5
+                player.velocity.x = player.speed
             }
         }
     }
@@ -624,16 +656,15 @@ function animate() {
                     ghosts.splice(i, 1)
                     score += 100
                     scoreEl.innerHTML = score
-                    console.log('got a ghost ! score is now : ', score)
                 } else {
                   if (life > 1) { // 목숨 감소 및 팩맨, 유령 초기화
                     cancelAnimationFrame(animationId)
-                    console.log('Lost a Life!')
                     life -= 1
                     lifeEl.innerHTML = life
                     setTimeout(() => {
                       resetPlayer()
                       resetGhost()
+                      items.splice(0, items.length)
                       animationId = requestAnimationFrame(animate)
                   }, 300)
                 }
@@ -661,7 +692,6 @@ function animate() {
     // win condition
     if (pellets.length === 0) {
         cancelAnimationFrame(animationId)
-        console.log('You Win!')
         game_display.style.backgroundColor = 'rgba(0,0,0,0.7)'
         win_lose_text.innerHTML = 'You Win!'
         game_info_text.innerHTML = '잠시 후 게임이 다시 시작됩니다...'
@@ -670,6 +700,7 @@ function animate() {
           resetPlayer()
           resetGhost()
           resetMap()
+          items.splice(0, items.length)
           animationId = requestAnimationFrame(animate)
         }, 1000)
     }
@@ -692,6 +723,10 @@ function animate() {
             }
     }
 
+    if (items.length < 2) {
+        generateRandomItem()
+    }
+
     // 쿠키 생성 및 충돌 확인
     for (let i = pellets.length -1; 0 <= i; i--){ // 깜빡거리지 않게 하기 위해 루프를 반대로 돌며 쿠키 그림
         const pellet = pellets[i]
@@ -702,8 +737,38 @@ function animate() {
                 pellets.splice(i, 1)
                 score += 10
                 scoreEl.innerHTML = score
-                console.log("ate a pellet ! score is now : ",  score, " / pellets left :", pellets.length)
             }
+    }
+
+    // 아이템 생성 및 충돌 확인
+    for (let i = items.length -1; 0 <= i; i--){
+        const item = items[i]
+        item.draw()
+
+        if (circleCollidesWithRectangle({circle : player, rectangle : item})) {
+                items.splice(i, 1)
+                score += 35
+                scoreEl.innerHTML = score
+                if (item.type === 0) {
+                    console.log('플레이어 속도 증가')
+                    player.speed = 7
+                    setTimeout(() => {
+                        player.speed = 5
+                    }, 5000)
+                } else if (item.type == 1) {
+                    life += 1
+                    lifeEl.innerHTML = life
+                    console.log('life 획득')
+                } else {
+                    console.log('유령 속도 감소')
+                     ghosts.forEach(ghost => { // 아이템 효과
+                     ghost.speed = 1
+                        setTimeout(() => {
+                            ghost.speed = 2
+                        }, 5000)
+                    })
+                }
+        }
     }
 
     // 막다른 길

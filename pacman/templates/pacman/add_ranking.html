@@ -16,7 +16,7 @@ body {
 
 header {
     font-family: 'Foldit', cursive;
-    font-size: 90px;
+    font-size: 100px;
 }
 
 .wrapper {
@@ -39,7 +39,7 @@ header {
     <i class="fa-solid fa-house" onclick="location.href='{% url 'index' %}'" style="color:white; font-size:20px;"></i>
 </div>
 <div class="wrapper">
-    <header>New Record</header>
+    <header>New Record!</header>
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
