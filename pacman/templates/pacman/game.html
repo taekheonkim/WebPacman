@@ -262,7 +262,7 @@ const player = new Player(
        x:0,
        y:0
         },
-    speed : 4
+    speed : 5
     }
 )
 
@@ -603,18 +603,8 @@ function generateRandomItem(){
     }
 }
 
-let padding
-
 function circleCollidesWithRectangle({circle, rectangle}) {
-    if (circle.speed == 6) {
-        padding = 2
-    } else if (circle.speed == 4) {
-        padding = 4
-    } else if (circle.speed == 2) {
-        padding = 4
-    } else if (circle.speed == 1) {
-        padding = 4
-    }
+    const padding = 4
     return (circle.position.y - circle.radius + circle.velocity.y <= rectangle.position.y + rectangle.height + padding
         && circle.position.x + circle.radius + circle.velocity.x >= rectangle.position.x - padding
         && circle.position.y + circle.radius + circle.velocity.y >= rectangle.position.y - padding
@@ -646,7 +636,6 @@ function animate() {
             if (circleCollidesWithRectangle({circle : {...player, velocity : {x:0, y:-player.speed}}, rectangle : boundary}))  {
                 player.velocity.y = 0
                 console.log('collide!')
-                console.log('충돌한 바운더리 : ', boundary)
                 break
             } else {
                 player.velocity.y = -player.speed
@@ -658,7 +647,6 @@ function animate() {
             if (circleCollidesWithRectangle({circle : {...player, velocity : {x:-player.speed, y:0}}, rectangle : boundary}))  {
                 player.velocity.x = 0
                 console.log('collide!')
-                console.log('충돌한 바운더리 : ', boundary)
                 break
             } else {
                 player.velocity.x = -player.speed
@@ -670,11 +658,9 @@ function animate() {
             if (circleCollidesWithRectangle({circle : {...player, velocity : {x:0, y:player.speed}}, rectangle : boundary}))  {
                 player.velocity.y = 0
                 console.log('collide!')
-                console.log('충돌한 바운더리 : ', boundary)
                 break
             } else {
                 player.velocity.y = player.speed
-                console.log('충돌한 바운더리 : ', boundary)
             }
         }
     } else if (keys.d.pressed && lastKey === 'd') {
@@ -682,11 +668,9 @@ function animate() {
             const boundary = boundaries[i]
             if (circleCollidesWithRectangle({circle : {...player, velocity : {x:player.speed, y:0}}, rectangle : boundary}))  {
                 player.velocity.x = 0
-                console.log('collide!')
                 break
             } else {
                 player.velocity.x = player.speed
-                console.log('충돌한 바운더리 : ', boundary)
             }
         }
     }
@@ -796,10 +780,10 @@ function animate() {
             scoreEl.innerHTML = score
             switch (item.type) {
             case 0 :
-                console.log('플레이어 속도 증가')
-                player.speed = 6
+                console.log('플레이어 속도 증가(작업중)')
+                player.speed = 5
                 setTimeout(() => {
-                    player.speed = 4
+                    player.speed = 5
                 }, 5000)
                 break
             case 1 :
