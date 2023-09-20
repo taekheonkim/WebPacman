@@ -1,8 +1,11 @@
+from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Ranker
 from .forms import Ranker_form
 
 def index(request):
+    messages.info(request, 'Your password has been changed successfully!')
     return render(request, 'pacman/index.html')
 
 def show_ranking(request):
@@ -33,4 +36,3 @@ def add_ranking(request, score):
         form = Ranker_form()
     context = {'form': form}
     return render(request, 'pacman/add_ranking.html', context)
-
